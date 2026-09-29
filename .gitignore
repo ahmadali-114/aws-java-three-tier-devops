@@ -1,0 +1,36 @@
+# Terraform: state and local variable files can contain infrastructure details or secrets.
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+*.tfvars.json
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# AWS and local credentials
+.aws/
+*.pem
+*.key
+.env
+.env.*
+!*.env.example
+
+# Java / Maven build output
+target/
+*.class
+*.war
+*.jar
+
+# IDE and operating-system files
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

@@ -32,3 +32,15 @@ module "security" {
     Owner = "Ahmad Ali"
   }
 }
+
+module "rds" {
+  source = "../../modules/rds"
+
+  name              = local.name
+  environment       = var.environment
+  subnet_ids        = module.vpc.database_subnet_ids
+  security_group_id = module.security.database_security_group_id
+  tags = {
+    Owner = "Ahmad Ali"
+  }
+}

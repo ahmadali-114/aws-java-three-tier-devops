@@ -21,3 +21,12 @@ output "security_group_ids" {
     database    = module.security.database_security_group_id
   }
 }
+
+output "database" {
+  description = "Connection information for the private RDS MySQL instance."
+  value = {
+    address                = module.rds.address
+    port                   = module.rds.port
+    master_user_secret_arn = module.rds.master_user_secret_arn
+  }
+}

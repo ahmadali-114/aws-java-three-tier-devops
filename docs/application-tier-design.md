@@ -4,11 +4,11 @@ The development application tier runs one Amazon Linux 2023 EC2 `t3.micro` insta
 
 ## Bootstrap sequence
 
-At launch, Terraform supplies a versioned `user_data` script. The script installs Java 17, Maven-wrapper prerequisites, MariaDB client tools, AWS CLI dependencies, and Tomcat 9. It then clones the public repository at the configured branch, reads the RDS-managed administrator secret using its instance IAM role, and initializes the application database only when the application credential secret is empty.
+At launch, Terraform supplies a versioned `user_data` script. The script installs the Java 17 JDK, Maven, MariaDB client tools, AWS CLI dependencies, and Tomcat 9. It then clones the public repository at the configured branch, reads the RDS-managed administrator secret using its instance IAM role, and initializes the application database only when the application credential secret is empty.
 
 It creates the restricted `javaapp` database user and stores that password in the separate application secret. The Java process receives its database URL, username, and password through `/etc/java-3tier.env`; credentials are never committed to Git or Terraform variables.
 
-The Maven wrapper produces the WAR and deploys it as `ROOT.war` to Tomcat 9. The service is configured with a systemd drop-in so the environment file is available only to the Tomcat process.
+The system Maven installation produces the WAR and deploys it as `ROOT.war` to Tomcat 9. The service is configured with a systemd drop-in so the environment file is available only to the Tomcat process.
 
 ## Why Tomcat 9
 
@@ -16,7 +16,11 @@ The application uses Spring Boot 2.7 and `javax.servlet` APIs. Tomcat 9 is compa
 
 ## Repair decision
 
-The first instance bootstrap stopped because the script attempted to install a package named `tomcat`, which Amazon Linux 2023 does not provide. The Terraform source now installs `tomcat9` and uses its matching service and deployment paths. `user_data_replace_on_change` is enabled, so applying this change replaces the failed instance with a new one that performs the corrected bootstrap from a clean state. The VPC, security groups, RDS instance, and Secrets Manager secret are not recreated.
+The first instance bootstrap stopped because the script attempted to install a package named `tomcat`, which Amazon Linux 2023 does not provide. The Terraform source now installs `tomcat9` and uses its matching service and deployment paths.
+
+The second bootstrap reached the build stage but stopped because `java-17-amazon-corretto-headless` provides a runtime but not the `javac` compiler. It also relied on Maven Wrapper files that are absent from this repository. The source now installs the Java 17 JDK package (`java-17-amazon-corretto-devel`) and the supported system Maven package, then runs `mvn` directly. This makes the build independent of missing wrapper files.
+
+`user_data_replace_on_change` is enabled, so applying this change replaces the failed instance with a new one that performs the corrected bootstrap from a clean state. The VPC, security groups, RDS instance, and Secrets Manager secret are not recreated. Because the application database secret was successfully initialized before the failed build, the next bootstrap reuses it rather than generating another application password.
 
 ## Verification after deployment
 

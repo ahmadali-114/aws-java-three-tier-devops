@@ -21,3 +21,14 @@ module "vpc" {
     Owner = "Ahmad Ali"
   }
 }
+
+module "security" {
+  source = "../../modules/security"
+
+  name        = local.name
+  environment = var.environment
+  vpc_id      = module.vpc.vpc_id
+  tags = {
+    Owner = "Ahmad Ali"
+  }
+}

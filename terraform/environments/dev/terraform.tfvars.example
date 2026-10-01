@@ -1,0 +1,5 @@
+# Copy only non-sensitive environment overrides to terraform.tfvars.
+# Terraform state and terraform.tfvars are ignored by Git.
+
+aws_region  = "ap-south-1"
+environment = "dev"

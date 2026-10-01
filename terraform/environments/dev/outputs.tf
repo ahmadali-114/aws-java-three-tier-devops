@@ -30,3 +30,11 @@ output "database" {
     master_user_secret_arn = module.rds.master_user_secret_arn
   }
 }
+
+output "application" {
+  description = "Identifiers for the initial EC2 application tier."
+  value = {
+    instance_id               = module.application.instance_id
+    application_db_secret_arn = module.application.application_database_secret_arn
+  }
+}

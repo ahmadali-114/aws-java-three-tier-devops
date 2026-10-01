@@ -18,7 +18,7 @@ ap-south-1
 - Two public subnets across two Availability Zones
 - Application Load Balancer
 - One EC2 application server for the first deployment
-- Java 11 and Apache Tomcat installed through EC2 user data
+- Java 17 and Apache Tomcat installed through EC2 user data
 - Amazon RDS MySQL in private database subnets
 - AWS Secrets Manager for database credentials
 - AWS Systems Manager for secure instance access

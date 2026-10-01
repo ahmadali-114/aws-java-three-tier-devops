@@ -19,6 +19,7 @@ override.tf.json
 .env
 .env.*
 !*.env.example
+Java-Login-App/settings.xml
 
 # Java / Maven build output
 target/

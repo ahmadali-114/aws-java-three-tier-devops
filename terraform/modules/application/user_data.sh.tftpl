@@ -11,7 +11,7 @@ readonly REPOSITORY_BRANCH="${repository_branch}"
 readonly APP_ROOT="/opt/java-3tier"
 
 dnf update -y
-dnf install -y git java-17-amazon-corretto-headless jq mariadb105 tomcat unzip
+dnf install -y git java-17-amazon-corretto-headless jq mariadb105 tomcat9 unzip
 
 rm -rf "$APP_ROOT"
 git clone --depth 1 --branch "$REPOSITORY_BRANCH" "$REPOSITORY_URL" "$APP_ROOT"
@@ -62,8 +62,8 @@ DB_PASSWORD=$APPLICATION_PASSWORD
 EOF
 chmod 0600 /etc/java-3tier.env
 
-install -d -m 0755 /etc/systemd/system/tomcat.service.d
-cat > /etc/systemd/system/tomcat.service.d/java-3tier.conf <<EOF
+install -d -m 0755 /etc/systemd/system/tomcat9.service.d
+cat > /etc/systemd/system/tomcat9.service.d/java-3tier.conf <<EOF
 [Service]
 EnvironmentFile=/etc/java-3tier.env
 EOF
@@ -72,9 +72,9 @@ cd "$APP_ROOT/Java-Login-App"
 chmod +x mvnw
 ./mvnw --batch-mode clean package -DskipTests
 
-rm -f /var/lib/tomcat/webapps/ROOT /var/lib/tomcat/webapps/ROOT.war
-cp target/dptweb-1.0.war /var/lib/tomcat/webapps/ROOT.war
+rm -f /var/lib/tomcat9/webapps/ROOT /var/lib/tomcat9/webapps/ROOT.war
+cp target/dptweb-1.0.war /var/lib/tomcat9/webapps/ROOT.war
 
 systemctl daemon-reload
-systemctl enable tomcat
-systemctl restart tomcat
+systemctl enable tomcat9
+systemctl restart tomcat9

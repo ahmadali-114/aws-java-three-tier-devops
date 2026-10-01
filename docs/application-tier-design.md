@@ -1,35 +1,28 @@
 # Application Tier Design
 
-## First development instance
+The development application tier runs one Amazon Linux 2023 EC2 `t3.micro` instance. It is intentionally a learning-environment design, not a highly available production deployment.
 
-The first release uses one `t3.micro` Amazon Linux 2023 EC2 instance. It is placed in a public subnet only because this lab intentionally avoids a NAT Gateway. Its application security group allows **no public inbound traffic**; only the future ALB will reach Tomcat on TCP 8080.
+## Bootstrap sequence
 
-The instance has a public IP solely for outbound package installation and GitHub source retrieval. It is not an administrative access path. There is no SSH security-group rule and no EC2 key pair.
+At launch, Terraform supplies a versioned `user_data` script. The script installs Java 17, Maven-wrapper prerequisites, MariaDB client tools, AWS CLI dependencies, and Tomcat 9. It then clones the public repository at the configured branch, reads the RDS-managed administrator secret using its instance IAM role, and initializes the application database only when the application credential secret is empty.
 
-## Administration
+It creates the restricted `javaapp` database user and stores that password in the separate application secret. The Java process receives its database URL, username, and password through `/etc/java-3tier.env`; credentials are never committed to Git or Terraform variables.
 
-The instance role receives `AmazonSSMManagedInstanceCore`. Administration will use AWS Systems Manager Session Manager rather than SSH.
+The Maven wrapper produces the WAR and deploys it as `ROOT.war` to Tomcat 9. The service is configured with a systemd drop-in so the environment file is available only to the Tomcat process.
 
-## Credentials
+## Why Tomcat 9
 
-At first boot, the instance role reads the RDS-managed master secret only to initialize the schema and create a dedicated MySQL `javaapp` user. The bootstrap script generates that user's password on the instance and writes it directly to a separate Secrets Manager secret.
+The application uses Spring Boot 2.7 and `javax.servlet` APIs. Tomcat 9 is compatible with those APIs. Tomcat 10+ uses the renamed Jakarta Servlet APIs and would require an application migration. Amazon Linux 2023 supplies the Tomcat 9 package as `tomcat9`, and its related service and webapp paths use the same name.
 
-Terraform creates the empty application secret but never sees its value. The application user has only `SELECT`, `INSERT`, `UPDATE`, and `DELETE` privileges on the `javaapp` database. It does not use the RDS master credential at runtime.
+## Repair decision
 
-## Deployment flow
+The first instance bootstrap stopped because the script attempted to install a package named `tomcat`, which Amazon Linux 2023 does not provide. The Terraform source now installs `tomcat9` and uses its matching service and deployment paths. `user_data_replace_on_change` is enabled, so applying this change replaces the failed instance with a new one that performs the corrected bootstrap from a clean state. The VPC, security groups, RDS instance, and Secrets Manager secret are not recreated.
 
-```text
-EC2 starts
-  -> install Java 17, Tomcat, Git, and the MySQL client
-  -> clone the public GitHub repository at main
-  -> read RDS master credentials through the instance role
-  -> create the schema and least-privilege application database user
-  -> store app credentials in Secrets Manager
-  -> build the WAR with Maven Wrapper
-  -> configure Tomcat environment variables
-  -> deploy ROOT.war and start Tomcat
-```
+## Verification after deployment
 
-## Trade-off for the learning environment
+Use AWS Systems Manager Run Command to verify all of the following without opening SSH:
 
-The application instance is in a public subnet for outbound HTTPS access. The production upgrade will move application instances to private subnets behind a NAT Gateway or use private VPC endpoints and a pre-built AMI/image.
+- `systemctl is-active tomcat9` returns `active`.
+- `/var/lib/tomcat9/webapps/ROOT.war` exists.
+- `curl -fsS http://localhost:8080/` returns the application response.
+- The instance can read the application credential secret but has no unnecessary administrative permissions.

@@ -36,3 +36,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+# One-off AWS Systems Manager command parameter files
+ssm-*.json

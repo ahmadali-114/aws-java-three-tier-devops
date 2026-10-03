@@ -14,6 +14,8 @@ The WAR has `spring-boot-starter-tomcat` with `provided` scope. Tomcat 9 supplie
 
 The application keeps `spring-boot-starter-security` and explicitly defines its security boundary. Only `/`, `/home`, `/login`, and `/register` are public; all other direct routes are denied. Default HTTP Basic and framework form-login are disabled because this application has its own controller-based login flow. CSRF protection remains enabled, and both POST forms include the Spring Security CSRF token. BCrypt remains responsible for password hashing. Because Spring Boot 2.7 uses Spring Security 5.7, this configuration uses the compatible `authorizeRequests().antMatchers(...)` API rather than the newer string-based `requestMatchers(...)` API.
 
+Registration and login return generic messages to the browser so database details are not disclosed publicly. SQL failures are logged server-side with the SQL state, vendor error code, and database message, but never include a password or submitted form values. Operators can diagnose failures through the protected Systems Manager session and Tomcat journal.
+
 ## Why Tomcat 9
 
 The application uses Spring Boot 2.7 and `javax.servlet` APIs. Tomcat 9 is compatible with those APIs. Tomcat 10+ uses the renamed Jakarta Servlet APIs and would require an application migration. Amazon Linux 2023 supplies the Tomcat 9 package as `tomcat9`, and its related service and webapp paths use the same name.

@@ -13,9 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Controller
 public class login {
+	private static final Logger LOGGER = LoggerFactory.getLogger(login.class);
 
 	@Value("${spring.datasource.url}")
 	private String url;
@@ -47,6 +50,8 @@ public class login {
 				}
 			}
 		} catch (SQLException exception) {
+			LOGGER.warn("Login database operation failed (SQLState={}, errorCode={}): {}",
+					exception.getSQLState(), exception.getErrorCode(), exception.getMessage());
 			return loginError("Login is temporarily unavailable. Please try again later.");
 		}
 

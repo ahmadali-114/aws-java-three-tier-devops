@@ -12,9 +12,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Controller
 public class register {
+	private static final Logger LOGGER = LoggerFactory.getLogger(register.class);
 
 	@Value("${spring.datasource.url}")
 	private String url;
@@ -51,6 +54,8 @@ public class register {
 			statement.executeUpdate();
 			return registrationResult("Account created. You can now sign in.");
 		} catch (SQLException exception) {
+			LOGGER.warn("Registration database operation failed (SQLState={}, errorCode={}): {}",
+					exception.getSQLState(), exception.getErrorCode(), exception.getMessage());
 			return registrationResult("Account could not be created. The username or email may already exist.");
 		}
 	}

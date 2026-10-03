@@ -11,11 +11,12 @@ public class SecurityConfiguration {
 	@Bean
 	SecurityFilterChain applicationSecurity(HttpSecurity http) throws Exception {
 		http
-			.authorizeHttpRequests(authorize -> authorize
-				.requestMatchers("/", "/home", "/login", "/register").permitAll()
-				.anyRequest().denyAll())
-			.formLogin(form -> form.disable())
-			.httpBasic(basic -> basic.disable());
+			.authorizeRequests()
+				.antMatchers("/", "/home", "/login", "/register").permitAll()
+				.anyRequest().denyAll()
+				.and()
+			.formLogin().disable()
+			.httpBasic().disable();
 
 		return http.build();
 	}

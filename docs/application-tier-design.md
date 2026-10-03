@@ -12,7 +12,7 @@ The system Maven installation produces the WAR and deploys it as `ROOT.war` to T
 
 The WAR has `spring-boot-starter-tomcat` with `provided` scope. Tomcat 9 supplies the JSP/Jasper engine at deployment time, so the project does not package a separate legacy `tomcat-jasper` dependency. This avoids version conflicts between the application archive and the operating system's Tomcat service.
 
-The application keeps `spring-boot-starter-security` and explicitly defines its security boundary. Only `/`, `/home`, `/login`, and `/register` are public; all other direct routes are denied. Default HTTP Basic and framework form-login are disabled because this application has its own controller-based login flow. CSRF protection remains enabled, and both POST forms include the Spring Security CSRF token. BCrypt remains responsible for password hashing.
+The application keeps `spring-boot-starter-security` and explicitly defines its security boundary. Only `/`, `/home`, `/login`, and `/register` are public; all other direct routes are denied. Default HTTP Basic and framework form-login are disabled because this application has its own controller-based login flow. CSRF protection remains enabled, and both POST forms include the Spring Security CSRF token. BCrypt remains responsible for password hashing. Because Spring Boot 2.7 uses Spring Security 5.7, this configuration uses the compatible `authorizeRequests().antMatchers(...)` API rather than the newer string-based `requestMatchers(...)` API.
 
 ## Why Tomcat 9
 

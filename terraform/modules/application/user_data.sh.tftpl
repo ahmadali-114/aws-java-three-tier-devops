@@ -15,7 +15,10 @@ dnf update -y
 dnf install -y git java-17-amazon-corretto-devel jq mariadb105 maven tomcat9 unzip
 
 rm -rf "$APP_ROOT"
-git clone --depth 1 --branch "$REPOSITORY_BRANCH" "$REPOSITORY_URL" "$APP_ROOT"
+# A full clone is intentional: the pinned release may be an older commit than
+# the current branch tip. A shallow clone can omit that commit and break a
+# reproducible deployment.
+git clone --branch "$REPOSITORY_BRANCH" "$REPOSITORY_URL" "$APP_ROOT"
 git -C "$APP_ROOT" checkout --detach "$REPOSITORY_REVISION"
 
 MASTER_SECRET_JSON=$(aws secretsmanager get-secret-value \

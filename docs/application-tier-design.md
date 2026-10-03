@@ -28,7 +28,7 @@ The third bootstrap reached Maven but found an incomplete legacy `tomcat-jasper`
 
 ## Release traceability
 
-The application revision is an immutable Git commit SHA passed from the development environment into the application module. A new source commit alone does not change Terraform state; intentionally updating `repository_revision` changes the user-data content and creates a replacement instance. This gives the deployment an auditable source version and prevents an instance from silently deploying a different commit if `main` changes while it is bootstrapping.
+The application revision is an immutable Git commit SHA passed from the development environment into the application module. A new source commit alone does not change Terraform state; intentionally updating `repository_revision` changes the user-data content and creates a replacement instance. This gives the deployment an auditable source version and prevents an instance from silently deploying a different commit if `main` changes while it is bootstrapping. The bootstrap performs a full clone rather than a shallow clone because a pinned release can be older than the current branch tip; the selected commit must exist locally before Git can check it out.
 
 ## Verification after deployment
 

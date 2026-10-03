@@ -1,7 +1,6 @@
 package com.dpt.demo;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,7 +37,7 @@ public class login {
 		}
 
 		String query = "SELECT username, password_hash FROM employees WHERE username = ?";
-		try (Connection connection = DriverManager.getConnection(url, databaseUsername, databasePassword);
+		try (Connection connection = DatabaseConnectionFactory.open(url, databaseUsername, databasePassword);
 				PreparedStatement statement = connection.prepareStatement(query)) {
 			statement.setString(1, userName);
 

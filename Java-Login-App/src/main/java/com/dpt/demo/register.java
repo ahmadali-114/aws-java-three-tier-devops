@@ -1,7 +1,6 @@
 package com.dpt.demo;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -44,7 +43,7 @@ public class register {
 		}
 
 		String sql = "INSERT INTO employees (first_name, last_name, email, username, password_hash) VALUES (?, ?, ?, ?, ?)";
-		try (Connection connection = DriverManager.getConnection(url, databaseUsername, databasePassword);
+		try (Connection connection = DatabaseConnectionFactory.open(url, databaseUsername, databasePassword);
 				PreparedStatement statement = connection.prepareStatement(sql)) {
 			statement.setString(1, firstName);
 			statement.setString(2, lastName);

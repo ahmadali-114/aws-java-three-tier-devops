@@ -16,6 +16,8 @@ The application keeps `spring-boot-starter-security` and explicitly defines its 
 
 Registration and login return generic messages to the browser so database details are not disclosed publicly. SQL failures are logged server-side with the SQL state, vendor error code, and database message, but never include a password or submitted form values. Operators can diagnose failures through the protected Systems Manager session and Tomcat journal.
 
+The application deploys as a traditional WAR to an external Tomcat service. Although the MySQL connector is packaged under `WEB-INF/lib`, the legacy controllers use `DriverManager` directly rather than a Spring-managed data source. `DatabaseConnectionFactory` explicitly loads `com.mysql.cj.jdbc.Driver` before opening the connection, making driver registration deterministic for the Tomcat web-application class loader.
+
 ## Why Tomcat 9
 
 The application uses Spring Boot 2.7 and `javax.servlet` APIs. Tomcat 9 is compatible with those APIs. Tomcat 10+ uses the renamed Jakarta Servlet APIs and would require an application migration. Amazon Linux 2023 supplies the Tomcat 9 package as `tomcat9`, and its related service and webapp paths use the same name.

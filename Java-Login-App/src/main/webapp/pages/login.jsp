@@ -11,6 +11,7 @@
 <center>${errorMessage }</center>
 
         <form method="post" action="login">
+			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
             <center>
             <table border="0" width="30%" cellpadding="3">
                 <thead>

@@ -12,6 +12,8 @@ The system Maven installation produces the WAR and deploys it as `ROOT.war` to T
 
 The WAR has `spring-boot-starter-tomcat` with `provided` scope. Tomcat 9 supplies the JSP/Jasper engine at deployment time, so the project does not package a separate legacy `tomcat-jasper` dependency. This avoids version conflicts between the application archive and the operating system's Tomcat service.
 
+The application keeps `spring-boot-starter-security` and explicitly defines its security boundary. Only `/`, `/home`, `/login`, and `/register` are public; all other direct routes are denied. Default HTTP Basic and framework form-login are disabled because this application has its own controller-based login flow. CSRF protection remains enabled, and both POST forms include the Spring Security CSRF token. BCrypt remains responsible for password hashing.
+
 ## Why Tomcat 9
 
 The application uses Spring Boot 2.7 and `javax.servlet` APIs. Tomcat 9 is compatible with those APIs. Tomcat 10+ uses the renamed Jakarta Servlet APIs and would require an application migration. Amazon Linux 2023 supplies the Tomcat 9 package as `tomcat9`, and its related service and webapp paths use the same name.

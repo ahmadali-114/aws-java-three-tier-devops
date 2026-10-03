@@ -38,3 +38,12 @@ output "application" {
     application_db_secret_arn = module.application.application_database_secret_arn
   }
 }
+
+output "load_balancer" {
+  description = "Public entry point and identifiers for the application load balancer."
+  value = {
+    dns_name         = module.alb.dns_name
+    arn              = module.alb.arn
+    target_group_arn = module.alb.target_group_arn
+  }
+}

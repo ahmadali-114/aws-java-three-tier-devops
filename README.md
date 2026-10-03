@@ -40,11 +40,11 @@ ap-south-1
 - [x] Git repository initialized with secure .gitignore
 - [x] AWS CLI and Terraform installed
 - [x] AWS budget and IAM deployment user configured
-- [ ] Terraform infrastructure created
-- [ ] Java application deployed
+- [x] VPC, least-privilege security groups, and private RDS created
+- [x] Java application deployed and verified through Systems Manager
 - [ ] ALB endpoint validated
 - [ ] Monitoring and cleanup runbook completed
 
 ## Cost Control
 
-This is a learning environment. Resources will be sized for development and removed with `terraform destroy` after testing.
+This is a learning environment. Resources are sized for development. The Application Load Balancer and running compute incur charges, so stop or destroy the environment after each lab session according to the cleanup runbook.

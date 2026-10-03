@@ -66,3 +66,17 @@ module "application" {
     Owner = "Ahmad Ali"
   }
 }
+
+module "alb" {
+  source = "../../modules/alb"
+
+  name               = local.name
+  environment        = var.environment
+  vpc_id             = module.vpc.vpc_id
+  subnet_ids         = module.vpc.public_subnet_ids
+  security_group_id  = module.security.alb_security_group_id
+  target_instance_id = module.application.instance_id
+  tags = {
+    Owner = "Ahmad Ali"
+  }
+}

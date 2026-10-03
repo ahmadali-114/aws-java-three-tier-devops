@@ -100,6 +100,7 @@ resource "aws_instance" "application" {
     rds_endpoint           = var.rds_endpoint
     rds_port               = var.rds_port
     repository_branch      = var.repository_branch
+    repository_revision    = var.repository_revision
     repository_url         = var.repository_url
   })
 

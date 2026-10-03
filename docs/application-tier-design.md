@@ -4,7 +4,7 @@ The development application tier runs one Amazon Linux 2023 EC2 `t3.micro` insta
 
 ## Bootstrap sequence
 
-At launch, Terraform supplies a versioned `user_data` script. The script installs the Java 17 JDK, Maven, MariaDB client tools, AWS CLI dependencies, and Tomcat 9. It then clones the public repository at the configured branch, reads the RDS-managed administrator secret using its instance IAM role, and initializes the application database only when the application credential secret is empty.
+At launch, Terraform supplies a versioned `user_data` script. The script installs the Java 17 JDK, Maven, MariaDB client tools, AWS CLI dependencies, and Tomcat 9. It then clones the public repository and checks out an explicit Git commit SHA. Terraform records that revision as part of the instance configuration, reads the RDS-managed administrator secret using its instance IAM role, and initializes the application database only when the application credential secret is empty.
 
 It creates the restricted `javaapp` database user and stores that password in the separate application secret. The Java process receives its database URL, username, and password through `/etc/java-3tier.env`; credentials are never committed to Git or Terraform variables.
 
@@ -25,6 +25,10 @@ The second bootstrap reached the build stage but stopped because `java-17-amazon
 The third bootstrap reached Maven but found an incomplete legacy `tomcat-jasper` dependency in `pom.xml`: Maven requires every unmanaged dependency to declare a version. The dependency is unnecessary because this design deploys the WAR to an external Tomcat 9 service, which already includes Jasper. Removing it allows Maven to use the Spring Boot-managed, provided Tomcat API without bundling a conflicting server implementation.
 
 `user_data_replace_on_change` is enabled, so applying this change replaces the failed instance with a new one that performs the corrected bootstrap from a clean state. The VPC, security groups, RDS instance, and Secrets Manager secret are not recreated. Because the application database secret was successfully initialized before the failed build, the next bootstrap reuses it rather than generating another application password.
+
+## Release traceability
+
+The application revision is an immutable Git commit SHA passed from the development environment into the application module. A new source commit alone does not change Terraform state; intentionally updating `repository_revision` changes the user-data content and creates a replacement instance. This gives the deployment an auditable source version and prevents an instance from silently deploying a different commit if `main` changes while it is bootstrapping.
 
 ## Verification after deployment
 

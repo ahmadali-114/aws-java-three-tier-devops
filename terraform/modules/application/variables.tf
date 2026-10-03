@@ -49,6 +49,11 @@ variable "repository_branch" {
   default     = "main"
 }
 
+variable "repository_revision" {
+  description = "Immutable Git commit SHA checked out by the EC2 bootstrap script."
+  type        = string
+}
+
 variable "tags" {
   description = "Additional tags applied to application-tier resources."
   type        = map(string)

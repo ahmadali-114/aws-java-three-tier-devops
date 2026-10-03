@@ -8,6 +8,7 @@ readonly RDS_ENDPOINT="${rds_endpoint}"
 readonly RDS_PORT="${rds_port}"
 readonly REPOSITORY_URL="${repository_url}"
 readonly REPOSITORY_BRANCH="${repository_branch}"
+readonly REPOSITORY_REVISION="${repository_revision}"
 readonly APP_ROOT="/opt/java-3tier"
 
 dnf update -y
@@ -15,6 +16,7 @@ dnf install -y git java-17-amazon-corretto-devel jq mariadb105 maven tomcat9 unz
 
 rm -rf "$APP_ROOT"
 git clone --depth 1 --branch "$REPOSITORY_BRANCH" "$REPOSITORY_URL" "$APP_ROOT"
+git -C "$APP_ROOT" checkout --detach "$REPOSITORY_REVISION"
 
 MASTER_SECRET_JSON=$(aws secretsmanager get-secret-value \
   --secret-id "$MASTER_SECRET_ARN" \

@@ -61,7 +61,7 @@ module "application" {
   rds_endpoint          = module.rds.address
   rds_port              = module.rds.port
   repository_url        = "https://github.com/ahmadali-114/aws-java-three-tier-devops.git"
-  repository_revision   = "51a8e4d46981fbea467caa7ef27956046878fd03"
+  repository_revision   = "6a2ef505ab311a48242bc5d2485c90158722c5fe"
   tags = {
     Owner = "Ahmad Ali"
   }

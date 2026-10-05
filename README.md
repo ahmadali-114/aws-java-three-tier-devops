@@ -22,7 +22,7 @@ ap-south-1
 - Amazon RDS MySQL in private database subnets
 - AWS Secrets Manager for database credentials
 - AWS Systems Manager for secure instance access
-- CloudWatch logs and alarms
+- Cloud-init and Tomcat journal logs for deployment troubleshooting
 - Terraform for reproducible infrastructure
 
 ## Security Principles
@@ -34,6 +34,23 @@ ap-south-1
 - No public SSH access
 - All AWS resources use project and environment tags
 
+## Architecture flow
+
+```text
+User Browser -> Application Load Balancer -> EC2 Java/Tomcat Application -> Amazon RDS MySQL
+```
+
+Terraform provisions the VPC, security groups, RDS, EC2 application tier, IAM/Systems Manager access, Secrets Manager integration, and the load balancer. EC2 checks out a pinned Git commit, builds the Maven WAR, and deploys it to Tomcat.
+
+## Documentation
+
+- [Application tier design](docs/application-tier-design.md)
+- [Database design](docs/database-design.md)
+- [Load balancer design](docs/load-balancer-design.md)
+- [Security model](docs/security-model.md)
+- [Deployment and validation guide](docs/deployment-guide.md)
+- [Development lab cleanup runbook](docs/cleanup-runbook.md)
+
 ## Current Status
 
 - [x] GitHub repository created
@@ -42,8 +59,10 @@ ap-south-1
 - [x] AWS budget and IAM deployment user configured
 - [x] VPC, least-privilege security groups, and private RDS created
 - [x] Java application deployed and verified through Systems Manager
-- [ ] ALB endpoint validated
-- [ ] Monitoring and cleanup runbook completed
+- [x] ALB endpoint and healthy target validated
+- [x] Deployment and cleanup runbooks documented
+- [ ] Latest MySQL JDBC-driver fix cleanly built and promoted through Terraform
+- [ ] HTTPS/ACM, CloudWatch alarms, remote Terraform state, and tested restore procedure added before production use
 
 ## Cost Control
 
